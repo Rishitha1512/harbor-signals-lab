@@ -22,10 +22,22 @@ app.get("/", (req, res) => {
   res.status(200).send("Harbor checkout is running");
 });
 
+app.get("/health",(req,res)=>{
+  res.status(200).json({status:"ok"});
+});
+
 app.get("/checkout", (req, res) => {
   checkoutRequests.inc();
   if (req.query.fail === "1") {
     checkoutErrors.inc();
+
+    console.log(JSON.stringify({
+      timestamp:newDate().toISOString(),
+      level:"error",
+      request_id:crypto.randomUUID(),
+      message:"checkout failed"
+    }));
+    
     return res.status(500).json({ result: "failed" });
   }
   return res.status(200).json({ result: "paid" });
